@@ -210,7 +210,10 @@ var cmdGetNodes = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-
+			if len(nodes) == 0 {
+				fmt.Printf("No nodes found for the given node type [%v]\n", nodeType)
+				return
+			}
 			format := tab.Print("*")
 			for _, node := range nodes {
 				fmt.Printf(format, node.NodeID, nodeType, node.Name, node.Status, node.Host, node.AgentPort, node.Port)
