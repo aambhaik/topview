@@ -9,6 +9,7 @@ This utility uses the following Go extension libraries
 # Table of Contents
 - [How to build](#how-to-build)
 - [Overview](#overview)
+- [How to use](#how-to-use)
 
 # How to build
 Simple! Just run the following (if you already have a Golang setup)
@@ -33,11 +34,11 @@ You are ready to use the topview!
 
 Topview is a command-line utility that works with Mashery Local 5.0 registry to provide:
 
-* View all Clusters: `topview get clusters`
+* Get all Clusters: `topview get clusters`
 * Use one of the clusters: `topview use cluster <cluster-name>`
-* View all Zones: `topview get zones`
+* Get all Zones: `topview get zones`
 * Use one of the zones: `topview use zone <zone-name>`
-* View all nodes of different types in a zone: `topview get nodes --type=<node-type>` or get all nodes in a zone: `topview get nodes`
+* Get all nodes of different types in a zone: `topview get nodes --type=<node-type>` or get all nodes in a zone: `topview get nodes`
 
    Following are valid node types
     - db (For database nodes)
@@ -45,7 +46,7 @@ Topview is a command-line utility that works with Mashery Local 5.0 registry to 
     - caches (For cache nodes)
     - tm (For Traffic Manager nodes)
     - log (For log service nodes)
-* View property settings of different types of node: `topview get settings --type=<node-type> --nodeId=<node-id>`
+* Get property settings of different types of node: `topview get settings --type=<node-type> --nodeId=<node-id>`
 
    Following are valid node types
     - db (For database nodes)
@@ -57,3 +58,12 @@ Topview is a command-line utility that works with Mashery Local 5.0 registry to 
   by setting the following ENV variables
    - TMGC_REGISTRY_HOST
    - TMGC_REGISTRY_PORT
+
+# How to use
+ 1. Get all clusters `topview get clusters`
+ 2. Select one of the clusters `topview use cluster <cluster-name>`
+ 3. Get all Zones in the selected cluster `topview get zones`
+ 4. Select one of the zones in the cluster `topview use zone <zone-name>`
+ 5. Get nodes in the selected zone `topview get nodes --type=<node-type>`
+ 6. Get property settings of different types of node `topview get settings --type=<node-type> --nodeId=<node-id>`
+
