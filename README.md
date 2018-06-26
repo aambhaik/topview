@@ -27,7 +27,13 @@ Topview is a command-line utility that works with Mashery Local 5.0 registry to 
     - caches (For cache nodes)
     - tm (For Traffic Manager nodes)
     - log (For log service nodes)
-
+* View property settings of different types of node: `topview get settings --type=<node-type> --nodeId=<node-id>`
+   Following are valid node types
+    - db (For database nodes)
+    - nosql (For cassandra nodes)
+    - caches (For cache nodes)
+    - tm (For Traffic Manager nodes)
+    - log (For log service nodes)
 * The default registry service host is localhost and the default registry port is 1080. It can be changed
   by setting the following ENV variables
    - TMGC_REGISTRY_HOST
