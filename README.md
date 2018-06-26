@@ -5,8 +5,12 @@ This utility uses the following Go extension libraries
 * [Viper](https://github.com/spf13/viper)
 
 # Table of Contents
-
+- [How to build](#Howtobuild)
 - [Overview](#overview)
+
+# How to build
+Simple! Just run the following...
+* go get github.com/aambhaik/topview/...
 
 # Overview
 
