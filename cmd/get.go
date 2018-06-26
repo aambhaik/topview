@@ -32,7 +32,7 @@ func init() {
 }
 
 var getCmd = &cobra.Command{
-	Use:   "view",
+	Use:   "get",
 	Short: "Clusterwide view of the topology",
 	Long:  `Clusterwide view of the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -42,8 +42,8 @@ var getCmd = &cobra.Command{
 
 var cmdGetClusters = &cobra.Command{
 	Use:   "clusters",
-	Short: "View available clusters",
-	Long:  `View available clusters in the topology`,
+	Short: "Get available clusters",
+	Long:  `Get available clusters in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		url := baseRegistryURL + "/clusters"
 
@@ -92,8 +92,8 @@ var cmdGetClusters = &cobra.Command{
 
 var cmdGetZones = &cobra.Command{
 	Use:   "zones",
-	Short: "View available zones in a cluster",
-	Long:  `View available zones in a cluster in the topology`,
+	Short: "Get available zones in a cluster",
+	Long:  `Get available zones in a cluster in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dir, err := homedir.Dir()
 		bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
@@ -153,14 +153,16 @@ var cmdGetZones = &cobra.Command{
 
 var cmdGetNodes = &cobra.Command{
 	Use:   "nodes",
-	Short: "View available nodes in a zone",
-	Long:  `View available nodes in a zone in the topology`,
+	Short: "Get available nodes in a zone",
+	Long:  `Get available nodes in a zone in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flag.Parse()
 		dir, err := homedir.Dir()
 		bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
 		if err != nil {
-			log.Fatalf("Unable to read session json file from user's HOME dir")
+			fmt.Println("Please select a Cluster by running \n    topview get clusters \nfollowed by \n    topview use cluster <cluster-name>")
+			fmt.Println("Please select a Zone by running \n    topview get zones \nfollowed by \n    topview use zone <zone-name>")
+			return
 		}
 		session, err := GetSession(bytes)
 		if err != nil {
