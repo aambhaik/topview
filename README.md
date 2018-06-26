@@ -1,3 +1,5 @@
+![topview logo](https://raw.githubusercontent.com/aambhaik/topview/master/logo.gif)
+
 Topview is a command-line utility to access Mashery Local toplogy for read-only use.
 This utility uses the following Go extension libraries
 
