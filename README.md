@@ -14,8 +14,12 @@ Simple! Just run the following...
 
 OR
 - if you prefer running in a docker container, then
-    * go get github.com/aambhaik/topview/...
-    * cd $GOPATH/src/github.com/aambhaik/topview
+    * make a new directory 'topview'
+      - mkdir topview
+      - cd topview
+    * Copy the Dockerfile
+      - wget https://raw.githubusercontent.com/aambhaik/topview/master/Dockerfile
+
     * change the registry Host and Port as necessary in the Dockerfile
     * docker build -t mashery/topview:1.0 .
     * docker run -it mashery/topview:1.0 /bin/bash
