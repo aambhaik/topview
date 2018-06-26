@@ -16,7 +16,7 @@ Topview is a command-line utility that works with Mashery Local 5.0 registry to 
 * Use one of the clusters: `topview use cluster <cluster-name>`
 * View all Zones: `topview get zones`
 * Use one of the zones: `topview use zone <zone-name>`
-* View all nodes of different types in a zone: `topview get nodes --type=<nnode-type>`
+* View all nodes of different types in a zone: `topview get nodes --type=<node-type>`
    Following are valid node types
     - databases
     - gateways
