@@ -15,15 +15,9 @@ import (
 var tab tabular.Table
 
 var nodeType string
-var nodeTypeSetting string
 var nodeId string
 
-var validNodeTypes = [...]string{
-	"db",
-	"nosql",
-	"caches",
-	"tm",
-	"log"}
+var validNodeTypeResources = map[string]string{"db": "/databases", "nosql": "/cassandras", "caches": "/caches", "tm": "/gateways", "log": "/logservices"}
 
 func init() {
 	RootCmd.AddCommand(getCmd)
@@ -35,7 +29,7 @@ func init() {
 	cmdGetNodes.Flags().StringVar(&nodeType, "type", "", "type of the node")
 	cobra.MarkFlagRequired(cmdGetNodes.Flags(), "type")
 
-	cmdGetSettings.Flags().StringVar(&nodeTypeSetting, "type", "", "type of the node")
+	cmdGetSettings.Flags().StringVar(&nodeType, "type", "", "type of the node")
 	cmdGetSettings.Flags().StringVar(&nodeId, "nodeId", "", "ID of the node")
 	cobra.MarkFlagRequired(cmdGetSettings.Flags(), "type")
 	cobra.MarkFlagRequired(cmdGetSettings.Flags(), "nodeId")
@@ -180,39 +174,11 @@ var cmdGetNodes = &cobra.Command{
 			log.Fatalf("Unable to un-marshall session json file from user's HOME dir")
 		}
 
-		var nodeResource string
-		switch nodeType {
-		case "db":
-			{
-				nodeResource = "/databases"
-				break
-			}
-		case "nosql":
-			{
-				nodeResource = "/cassandras"
-				break
-			}
-		case "tm":
-			{
-				nodeResource = "/gateways"
-				break
-			}
-		case "caches":
-			{
-				nodeResource = "/caches"
-				break
-			}
-		case "log":
-			{
-				nodeResource = "/logservices"
-				break
-			}
-		default:
-			{
-				nodeResource = "/databases"
-			}
+		nodeResource, found := validNodeTypeResources[nodeType]
+		if !found {
+			fmt.Printf("Invalid node type [%v]\n", nodeType)
+			return
 		}
-
 		clusterId := session.ClusterId
 		zoneId := session.ZoneId
 		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource
@@ -273,43 +239,17 @@ var cmdGetSettings = &cobra.Command{
 
 		clusterId := session.ClusterId
 		zoneId := session.ZoneId
-		var nodeResource string
-		switch nodeTypeSetting {
-		case "db":
-			{
-				nodeResource = "/databases"
-				break
-			}
-		case "nosql":
-			{
-				nodeResource = "/cassandras"
-				break
-			}
-		case "tm":
-			{
-				nodeResource = "/gateways"
-				break
-			}
-		case "caches":
-			{
-				nodeResource = "/caches"
-				break
-			}
-		case "log":
-			{
-				nodeResource = "/logservices"
-				break
-			}
-		default:
-			{
-				nodeResource = "/databases"
-			}
+
+		nodeResource, found := validNodeTypeResources[nodeType]
+		if !found {
+			fmt.Printf("Invalid node type [%v]\n", nodeType)
+			return
 		}
 		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource + "/" + nodeId + "/properties"
 
 		fmt.Printf("Using cluster [%v]\n", session.ClusterName)
 		fmt.Printf("Using Zone [%v]\n", session.ZoneName)
-		fmt.Printf("Using Node ID [%v] of type [%v]\n", nodeId, nodeTypeSetting)
+		fmt.Printf("Using Node ID [%v] of type [%v]\n", nodeId, nodeType)
 
 		tab = tabular.New()
 		tab.Col("property", "Property", 30)
