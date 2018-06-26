@@ -102,7 +102,7 @@ func initConfig() {
 	timeout := time.Duration(1 * time.Second)
 	_, err := net.DialTimeout("tcp", address, timeout)
 	if err != nil {
-		fmt.Printf("Registry address [%v] is unreachable", address)
+		fmt.Printf("Registry address [%v] is unreachable\n", address)
 		os.Exit(1)
 	}
 }
