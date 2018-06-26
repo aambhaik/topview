@@ -5,7 +5,7 @@ This utility uses the following Go extension libraries
 * [Viper](https://github.com/spf13/viper)
 
 # Table of Contents
-- [How to build](#Howtobuild)
+- [How to build](#how-to-build)
 - [Overview](#overview)
 
 # How to build
