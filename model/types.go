@@ -28,3 +28,11 @@ type Node struct {
 	Status    string `json:"status"`
 	Port      int    `json:"port"`
 }
+
+type NodeSetting struct {
+	Property        string `json:"property"`
+	Value           string `json:"value"`
+	FileDestination string `json:"fileDestination",omitempty`
+	Handler         string `json:"propertyHandler",omitempty`
+	Encoded         bool   `json:"encoded",omitempty`
+}

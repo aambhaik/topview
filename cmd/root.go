@@ -18,12 +18,9 @@ import (
 	"fmt"
 	"os"
 
-	"encoding/json"
-	"github.com/aambhaik/topview/model"
 	_ "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 	"strings"
 )
 
@@ -97,40 +94,4 @@ func initConfig() {
 	registryHost = viper.Get("REGISTRY_HOST").(string)
 	registryPort = viper.Get("REGISTRY_PORT").(string)
 	baseRegistryURL = strings.Join([]string{"http://", registryHost, ":", registryPort, "/registry/rest/v1"}, "")
-}
-
-func GetClusters(body []byte) ([]*model.Cluster, error) {
-	clusters := []*model.Cluster{}
-	err := json.Unmarshal(body, &clusters)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return clusters, err
-}
-
-func GetZones(body []byte) ([]*model.Zone, error) {
-	zones := []*model.Zone{}
-	err := json.Unmarshal(body, &zones)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return zones, err
-}
-
-func GetNodes(body []byte) ([]*model.Node, error) {
-	nodes := []*model.Node{}
-	err := json.Unmarshal(body, &nodes)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return nodes, err
-}
-
-func GetSession(body []byte) (*model.Session, error) {
-	session := &model.Session{}
-	err := json.Unmarshal(body, &session)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return session, err
 }

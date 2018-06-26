@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
+	"os"
 )
 
 func init() {
@@ -39,6 +40,10 @@ var cmdUseCluster = &cobra.Command{
 			log.Fatalf("Unable to detect user's HOME directory")
 		}
 
+		//clear existing state, if any
+		os.Remove(dir + "/.topology.zones.json")
+		os.Remove(dir + "/.topviewer-session.json")
+
 		bytes, err := ioutil.ReadFile(dir + "/.topology.clusters.json")
 		if err != nil {
 			log.Fatalf("Unable to read clusters json file from user's HOME dir")
@@ -65,8 +70,8 @@ var cmdUseCluster = &cobra.Command{
 					log.Fatalf("Unable to write clusters json file from user's HOME dir, %v", err)
 
 				}
-				fmt.Println("Using cluster: ", cluster.Name)
-				break
+
+				fmt.Printf("Using cluster [%v]\n", session.ClusterName)
 			}
 		}
 		if !foundCluster {
@@ -117,7 +122,9 @@ var cmdUseZone = &cobra.Command{
 				bytes, err = json.Marshal(session)
 
 				err = ioutil.WriteFile(dir+"/.topviewer-session.json", bytes, 0644)
-				fmt.Println("Using zone: ", zone.Name)
+
+				fmt.Printf("Using cluster [%v]\n", session.ClusterName)
+				fmt.Printf("Using Zone [%v]\n", session.ZoneName)
 
 				break
 			}

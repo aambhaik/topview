@@ -15,6 +15,9 @@ import (
 var tab tabular.Table
 
 var nodeType string
+var nodeTypeSetting string
+var nodeId string
+
 var validNodeTypes = [...]string{
 	"db",
 	"nosql",
@@ -27,8 +30,16 @@ func init() {
 	getCmd.AddCommand(cmdGetClusters)
 	getCmd.AddCommand(cmdGetZones)
 	getCmd.AddCommand(cmdGetNodes)
+	getCmd.AddCommand(cmdGetSettings)
 
 	cmdGetNodes.Flags().StringVar(&nodeType, "type", "", "type of the node")
+	cobra.MarkFlagRequired(cmdGetNodes.Flags(), "type")
+
+	cmdGetSettings.Flags().StringVar(&nodeTypeSetting, "type", "", "type of the node")
+	cmdGetSettings.Flags().StringVar(&nodeId, "nodeId", "", "ID of the node")
+	cobra.MarkFlagRequired(cmdGetSettings.Flags(), "type")
+	cobra.MarkFlagRequired(cmdGetSettings.Flags(), "nodeId")
+
 }
 
 var getCmd = &cobra.Command{
@@ -36,7 +47,7 @@ var getCmd = &cobra.Command{
 	Short: "Clusterwide view of the topology",
 	Long:  `Clusterwide view of the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Please specify one of the following subcommands: [clusters|zones|nodes]")
+		fmt.Println("Please specify one of the following subcommands: [clusters|zones|nodes|settings]")
 	},
 }
 
@@ -45,8 +56,13 @@ var cmdGetClusters = &cobra.Command{
 	Short: "Get available clusters",
 	Long:  `Get available clusters in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
-		url := baseRegistryURL + "/clusters"
 
+		dir, err := homedir.Dir()
+		if err != nil {
+			log.Fatalf("Unable to detect user's HOME directory")
+		}
+
+		url := baseRegistryURL + "/clusters"
 		tab = tabular.New()
 		//tab.Col("id", "Cluster ID", 37)
 		tab.Col("name", "Cluster Name", 20)
@@ -71,11 +87,6 @@ var cmdGetClusters = &cobra.Command{
 			format := tab.Print("*")
 			for _, cluster := range clusters {
 				fmt.Printf(format, cluster.Name, cluster.CreatedTime)
-			}
-
-			dir, err := homedir.Dir()
-			if err != nil {
-				log.Fatalf("Unable to detect user's HOME directory")
 			}
 
 			bytes, err := json.Marshal(clusters)
@@ -109,7 +120,7 @@ var cmdGetZones = &cobra.Command{
 		clusterId := session.ClusterId
 		url := baseRegistryURL + "/clusters/" + clusterId + "/zones"
 
-		fmt.Println("Using cluster: ", session.ClusterName)
+		fmt.Printf("Using cluster [%v]\n", session.ClusterName)
 
 		tab = tabular.New()
 		//tab.Col("id", "Zone ID", 37)
@@ -206,8 +217,8 @@ var cmdGetNodes = &cobra.Command{
 		zoneId := session.ZoneId
 		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource
 
-		fmt.Println("Using cluster: ", session.ClusterName)
-		fmt.Println("Using Zone: ", session.ZoneName)
+		fmt.Printf("Using cluster [%v]\n", session.ClusterName)
+		fmt.Printf("Using Zone [%v]\n", session.ZoneName)
 
 		tab = tabular.New()
 		tab.Col("id", "Node ID", 37)
@@ -237,6 +248,99 @@ var cmdGetNodes = &cobra.Command{
 			format := tab.Print("*")
 			for _, node := range nodes {
 				fmt.Printf(format, node.NodeID, nodeType, node.Name, node.Status, node.Host, node.AgentPort, node.Port)
+			}
+		}
+	},
+}
+
+var cmdGetSettings = &cobra.Command{
+	Use:   "settings",
+	Short: "Get settings for a specific node",
+	Long:  `Get settings for a specific node in the topology`,
+	Run: func(cmd *cobra.Command, args []string) {
+		flag.Parse()
+		dir, err := homedir.Dir()
+		bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
+		if err != nil {
+			fmt.Println("Please select a Cluster by running \n    topview get clusters \nfollowed by \n    topview use cluster <cluster-name>")
+			fmt.Println("Please select a Zone by running \n    topview get zones \nfollowed by \n    topview use zone <zone-name>")
+			return
+		}
+		session, err := GetSession(bytes)
+		if err != nil {
+			log.Fatalf("Unable to un-marshall session json file from user's HOME dir")
+		}
+
+		clusterId := session.ClusterId
+		zoneId := session.ZoneId
+		var nodeResource string
+		switch nodeTypeSetting {
+		case "db":
+			{
+				nodeResource = "/databases"
+				break
+			}
+		case "nosql":
+			{
+				nodeResource = "/cassandras"
+				break
+			}
+		case "tm":
+			{
+				nodeResource = "/gateways"
+				break
+			}
+		case "caches":
+			{
+				nodeResource = "/caches"
+				break
+			}
+		case "log":
+			{
+				nodeResource = "/logservices"
+				break
+			}
+		default:
+			{
+				nodeResource = "/databases"
+			}
+		}
+		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource + "/" + nodeId + "/properties"
+
+		fmt.Printf("Using cluster [%v]\n", session.ClusterName)
+		fmt.Printf("Using Zone [%v]\n", session.ZoneName)
+		fmt.Printf("Using Node ID [%v] of type [%v]\n", nodeId, nodeTypeSetting)
+
+		tab = tabular.New()
+		tab.Col("property", "Property", 30)
+		tab.Col("value", "Value", 20)
+		tab.Col("propertyHandler", "Handler", 20)
+		tab.Col("encoded", "Is Encoded?", 12)
+		tab.Col("fileDestination", "File Destination", 50)
+
+		response, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer response.Body.Close()
+
+		if response != nil {
+			body, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			settings, err := GetSettings(body)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if len(settings) == 0 {
+				fmt.Printf("No settings found for the given nodeId [%v] of type [%v]\n", nodeId, nodeType)
+				return
+			}
+			format := tab.Print("*")
+			for _, setting := range settings {
+				fmt.Printf(format, truncateString(setting.Property, 30), truncateString(setting.Value, 20), truncateString(setting.Handler, 20), setting.Encoded, truncateString(setting.FileDestination, 50))
 			}
 		}
 	},
