@@ -21,7 +21,9 @@ import (
 	_ "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"net"
 	"strings"
+	"time"
 )
 
 var cfgFile string
@@ -94,4 +96,13 @@ func initConfig() {
 	registryHost = viper.Get("REGISTRY_HOST").(string)
 	registryPort = viper.Get("REGISTRY_PORT").(string)
 	baseRegistryURL = strings.Join([]string{"http://", registryHost, ":", registryPort, "/registry/rest/v1"}, "")
+
+	//check if the URL is accessible
+	address := registryHost + ":" + registryPort
+	timeout := time.Duration(1 * time.Second)
+	_, err := net.DialTimeout("tcp", address, timeout)
+	if err != nil {
+		fmt.Printf("Registry address [%v] is unreachable", address)
+		os.Exit(1)
+	}
 }

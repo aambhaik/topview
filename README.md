@@ -7,29 +7,9 @@ This utility uses the following Go extension libraries
 * [Viper](https://github.com/spf13/viper)
 
 # Table of Contents
-- [How to build](#how-to-build)
 - [Overview](#overview)
+- [How to build](#how-to-build)
 - [How to use](#how-to-use)
-
-# How to build
-Simple! Just run the following (if you already have a Golang setup)
-* go get github.com/aambhaik/topview/...
-
-OR
-- if you don't want to setup Golang locally, follow the Docker way...
-    * make a new directory 'topview'
-      - mkdir topview
-      - cd topview
-    * Copy the Dockerfile
-      - wget https://raw.githubusercontent.com/aambhaik/topview/master/Dockerfile
-
-    * change the registry Host and Port as necessary in the Dockerfile
-    * docker build -t mashery/topview:1.0 .
-    * docker run -it -e TMGC_REGISTRY_HOST=10.1.10.138 mashery/topview:1.0 /bin/bash
-      - replace the env var TMGC_REGISTRY_HOST with your registry ip
-
-You are ready to use the topview!
-
 
 # Overview
 
@@ -59,6 +39,25 @@ Topview is a command-line utility that works with Mashery Local 5.0 registry to 
   by setting the following ENV variables
    - TMGC_REGISTRY_HOST
    - TMGC_REGISTRY_PORT
+
+# How to build
+Simple! Just run the following (if you already have a Golang setup)
+* go get github.com/aambhaik/topview/...
+
+OR
+- if you don't want to setup Golang locally, follow the Docker way...
+    * make a new directory 'topview'
+      - mkdir topview
+      - cd topview
+    * Copy the Dockerfile
+      - wget https://raw.githubusercontent.com/aambhaik/topview/master/Dockerfile
+
+    * change the registry Host and Port as necessary in the Dockerfile
+    * docker build -t mashery/topview:1.0 .
+    * docker run -it -e TMGC_REGISTRY_HOST=10.1.10.138 mashery/topview:1.0 /bin/bash
+      - replace the env var TMGC_REGISTRY_HOST with your registry ip
+
+You are ready to use the topview!
 
 # How to use
  1. Get all clusters `topview get clusters`
