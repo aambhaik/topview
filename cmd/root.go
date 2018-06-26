@@ -117,8 +117,8 @@ func GetZones(body []byte) ([]*model.Zone, error) {
 	return zones, err
 }
 
-func GetDatabases(body []byte) ([]*model.DatabaseNode, error) {
-	nodes := []*model.DatabaseNode{}
+func GetNodes(body []byte) ([]*model.Node, error) {
+	nodes := []*model.Node{}
 	err := json.Unmarshal(body, &nodes)
 	if err != nil {
 		log.Fatal(err)

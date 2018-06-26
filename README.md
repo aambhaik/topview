@@ -18,11 +18,11 @@ Topview is a command-line utility that works with Mashery Local 5.0 registry to 
 * Use one of the zones: `topview use zone <zone-name>`
 * View all nodes of different types in a zone: `topview get nodes --type=<node-type>`
    Following are valid node types
-    - databases
-    - gateways
-    - caches
-    - cassandras
-    - logservices
+    - db (For database nodes)
+    - nosql (For cassandra nodes)
+    - caches (For cache nodes)
+    - tm (For Traffic Manager nodes)
+    - log (For log service nodes)
 
 * The default registry service host is localhost and the default registry port is 1080. It can be changed
   by setting the following ENV variables

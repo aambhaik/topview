@@ -20,7 +20,7 @@ type Session struct {
 	ZoneId      string `json:"zoneId",omitempty`
 }
 
-type DatabaseNode struct {
+type Node struct {
 	NodeID    string `json:"nodeId"`
 	Name      string `json:"name"`
 	Host      string `json:"host"`

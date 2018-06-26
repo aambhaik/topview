@@ -16,11 +16,11 @@ var tab tabular.Table
 
 var nodeType string
 var validNodeTypes = [...]string{
-	"databases",
-	"gateways",
+	"db",
+	"nosql",
 	"caches",
-	"cassandras",
-	"logservices"}
+	"tm",
+	"log"}
 
 func init() {
 	RootCmd.AddCommand(getCmd)
@@ -169,16 +169,42 @@ var cmdGetNodes = &cobra.Command{
 			log.Fatalf("Unable to un-marshall session json file from user's HOME dir")
 		}
 
+		var nodeResource string
 		switch nodeType {
+		case "db":
+			{
+				nodeResource = "/databases"
+				break
+			}
+		case "nosql":
+			{
+				nodeResource = "/cassandras"
+				break
+			}
+		case "tm":
+			{
+				nodeResource = "/gateways"
+				break
+			}
+		case "caches":
+			{
+				nodeResource = "/caches"
+				break
+			}
+		case "log":
+			{
+				nodeResource = "/logservices"
+				break
+			}
 		default:
 			{
-				nodeType = "databases"
+				nodeResource = "/databases"
 			}
 		}
 
 		clusterId := session.ClusterId
 		zoneId := session.ZoneId
-		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + "/" + nodeType
+		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource
 
 		fmt.Println("Using cluster: ", session.ClusterName)
 		fmt.Println("Using Zone: ", session.ZoneName)
@@ -203,14 +229,14 @@ var cmdGetNodes = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			nodes, err := GetDatabases(body)
+			nodes, err := GetNodes(body)
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			format := tab.Print("*")
 			for _, node := range nodes {
-				fmt.Printf(format, node.NodeID, "database", node.Name, node.Status, node.Host, node.AgentPort, node.Port)
+				fmt.Printf(format, node.NodeID, nodeType, node.Name, node.Status, node.Host, node.AgentPort, node.Port)
 			}
 		}
 	},
