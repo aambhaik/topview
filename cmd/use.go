@@ -41,10 +41,10 @@ var cmdUseCluster = &cobra.Command{
 		}
 
 		//clear existing state, if any
-		os.Remove(dir + "/.topology.zones.json")
-		os.Remove(dir + "/.topviewer-session.json")
+		os.Remove(dir + "/.topview.zones.json")
+		os.Remove(dir + "/.topview-session.json")
 
-		bytes, err := ioutil.ReadFile(dir + "/.topology.clusters.json")
+		bytes, err := ioutil.ReadFile(dir + "/.topview.clusters.json")
 		if err != nil {
 			log.Fatalf("Unable to read clusters json file from user's HOME dir")
 		}
@@ -65,7 +65,7 @@ var cmdUseCluster = &cobra.Command{
 				session.ClusterName = cluster.Name
 				bytes, err = json.Marshal(session)
 
-				err = ioutil.WriteFile(dir+"/.topviewer-session.json", bytes, 0644)
+				err = ioutil.WriteFile(dir+"/.topview-session.json", bytes, 0644)
 				if err != nil {
 					log.Fatalf("Unable to write clusters json file from user's HOME dir, %v", err)
 
@@ -94,7 +94,7 @@ var cmdUseZone = &cobra.Command{
 			log.Fatalf("Unable to detect user's HOME directory")
 		}
 
-		bytes, err := ioutil.ReadFile(dir + "/.topology.zones.json")
+		bytes, err := ioutil.ReadFile(dir + "/.topview.zones.json")
 		if err != nil {
 			log.Fatalf("Unable to read zones json file from user's HOME dir")
 		}
@@ -108,7 +108,7 @@ var cmdUseZone = &cobra.Command{
 			if zone.Name == args[0] {
 				//found our zone, look up its ID
 				foundZone = true
-				bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
+				bytes, err := ioutil.ReadFile(dir + "/.topview-session.json")
 				if err != nil {
 					log.Fatalf("Unable to read session json file from user's HOME dir")
 				}
@@ -121,7 +121,7 @@ var cmdUseZone = &cobra.Command{
 				session.ZoneName = zone.Name
 				bytes, err = json.Marshal(session)
 
-				err = ioutil.WriteFile(dir+"/.topviewer-session.json", bytes, 0644)
+				err = ioutil.WriteFile(dir+"/.topview-session.json", bytes, 0644)
 
 				fmt.Printf("Using cluster [%v]\n", session.ClusterName)
 				fmt.Printf("Using Zone [%v]\n", session.ZoneName)

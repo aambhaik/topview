@@ -27,7 +27,7 @@ func init() {
 	getCmd.AddCommand(cmdGetSettings)
 
 	cmdGetNodes.Flags().StringVar(&nodeType, "type", "", "type of the node")
-	cobra.MarkFlagRequired(cmdGetNodes.Flags(), "type")
+	//cobra.MarkFlagRequired(cmdGetNodes.Flags(), "type")
 
 	cmdGetSettings.Flags().StringVar(&nodeType, "type", "", "type of the node")
 	cmdGetSettings.Flags().StringVar(&nodeId, "nodeId", "", "ID of the node")
@@ -87,7 +87,7 @@ var cmdGetClusters = &cobra.Command{
 			if err != nil {
 				log.Fatalf("Unable to marshal clusters content")
 			}
-			err = ioutil.WriteFile(dir+"/.topology.clusters.json", bytes, 0644)
+			err = ioutil.WriteFile(dir+"/.topview.clusters.json", bytes, 0644)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -101,7 +101,7 @@ var cmdGetZones = &cobra.Command{
 	Long:  `Get available zones in a cluster in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dir, err := homedir.Dir()
-		bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
+		bytes, err := ioutil.ReadFile(dir + "/.topview-session.json")
 		if err != nil {
 			fmt.Println("Please select a Cluster by running \n    topview view clusters \nfollowed by \n    topview use cluster <cluster-name>")
 			return
@@ -146,7 +146,7 @@ var cmdGetZones = &cobra.Command{
 			if err != nil {
 				log.Fatalf("Unable to marshal zones content")
 			}
-			err = ioutil.WriteFile(dir+"/.topology.zones.json", bytes, 0644)
+			err = ioutil.WriteFile(dir+"/.topview.zones.json", bytes, 0644)
 
 			format := tab.Print("*")
 			for _, zone := range zones {
@@ -163,7 +163,7 @@ var cmdGetNodes = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		flag.Parse()
 		dir, err := homedir.Dir()
-		bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
+		bytes, err := ioutil.ReadFile(dir + "/.topview-session.json")
 		if err != nil {
 			fmt.Println("Please select a Cluster by running \n    topview get clusters \nfollowed by \n    topview use cluster <cluster-name>")
 			fmt.Println("Please select a Zone by running \n    topview get zones \nfollowed by \n    topview use zone <zone-name>")
@@ -174,49 +174,32 @@ var cmdGetNodes = &cobra.Command{
 			log.Fatalf("Unable to un-marshall session json file from user's HOME dir")
 		}
 
-		nodeResource, found := validNodeTypeResources[nodeType]
-		if !found {
-			fmt.Printf("Invalid node type [%v]\n", nodeType)
-			return
-		}
-		clusterId := session.ClusterId
-		zoneId := session.ZoneId
-		url := baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource
-
-		fmt.Printf("Using cluster [%v]\n", session.ClusterName)
-		fmt.Printf("Using Zone [%v]\n", session.ZoneName)
-
-		tab = tabular.New()
-		tab.Col("id", "Node ID", 37)
-		tab.Col("type", "Node Type", 10)
-		tab.Col("name", "Node Name", 20)
-		tab.Col("status", "Node Status", 20)
-		tab.Col("host", "Node Host", 20)
-		tab.Col("agentPort", "Node Agent Port", 15)
-		tab.Col("port", "Node Service Port", 16)
-
-		response, err := http.Get(url)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer response.Body.Close()
-
-		if response != nil {
-			body, err := ioutil.ReadAll(response.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			nodes, err := GetNodes(body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if len(nodes) == 0 {
-				fmt.Printf("No nodes found for the given node type [%v]\n", nodeType)
+		var getAllTypesOfNodes bool
+		var found bool
+		if len(nodeType) > 0 {
+			_, found = validNodeTypeResources[nodeType]
+			if !found {
+				keys, err := GetKeysOfMap(validNodeTypeResources)
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Printf("Invalid node type [%v]\nPlease provide one of the following node types %v\n", nodeType, keys)
 				return
 			}
-			format := tab.Print("*")
-			for _, node := range nodes {
-				fmt.Printf(format, node.NodeID, nodeType, node.Name, node.Status, node.Host, node.AgentPort, node.Port)
+		} else {
+			//get all type of nodes
+			getAllTypesOfNodes = true
+		}
+
+		if getAllTypesOfNodes {
+			err = GetAllNodes(session, &validNodeTypeResources, nil)
+			if err != nil {
+				log.Fatalln(err)
+			}
+		} else {
+			err = GetAllNodes(session, &validNodeTypeResources, &nodeType)
+			if err != nil {
+				log.Fatalln(err)
 			}
 		}
 	},
@@ -229,7 +212,7 @@ var cmdGetSettings = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		flag.Parse()
 		dir, err := homedir.Dir()
-		bytes, err := ioutil.ReadFile(dir + "/.topviewer-session.json")
+		bytes, err := ioutil.ReadFile(dir + "/.topview-session.json")
 		if err != nil {
 			fmt.Println("Please select a Cluster by running \n    topview get clusters \nfollowed by \n    topview use cluster <cluster-name>")
 			fmt.Println("Please select a Zone by running \n    topview get zones \nfollowed by \n    topview use zone <zone-name>")
@@ -283,7 +266,7 @@ var cmdGetSettings = &cobra.Command{
 			}
 			format := tab.Print("*")
 			for _, setting := range settings {
-				fmt.Printf(format, truncateString(setting.Property, 30), truncateString(setting.Value, 20), truncateString(setting.Handler, 20), setting.Encoded, truncateString(setting.FileDestination, 50))
+				fmt.Printf(format, TruncateString(setting.Property, 30), TruncateString(setting.Value, 20), TruncateString(setting.Handler, 20), setting.Encoded, TruncateString(setting.FileDestination, 50))
 			}
 		}
 	},
