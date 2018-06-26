@@ -9,11 +9,11 @@ This utility uses the following Go extension libraries
 - [Overview](#overview)
 
 # How to build
-Simple! Just run the following...
+Simple! Just run the following (if you already have a Golang setup)
 * go get github.com/aambhaik/topview/...
 
 OR
-- if you prefer running in a docker container, then
+- if you don't want to setup Golang locally, follow the Docker way...
     * make a new directory 'topview'
       - mkdir topview
       - cd topview
