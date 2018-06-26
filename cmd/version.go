@@ -15,6 +15,6 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of topview CLI",
 	Long:  `All software has versions. This is topview CLI's`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Mashery Topology Viewer v0.1")
+		fmt.Println("Mashery Topology Viewer v1.0")
 	},
 }
