@@ -12,6 +12,17 @@ This utility uses the following Go extension libraries
 Simple! Just run the following...
 * go get github.com/aambhaik/topview/...
 
+OR
+- if you prefer running in a docker container, then
+    * go get github.com/aambhaik/topview/...
+    * cd $GOPATH/src/github.com/aambhaik/topview
+    * change the registry Host and Port as necessary in the Dockerfile
+    * docker build -t mashery/topview:1.0 .
+    * docker run -it mashery/topview:1.0 /bin/bash
+
+You are ready to use the topview!
+
+
 # Overview
 
 Topview is a command-line utility that works with Mashery Local 5.0 registry to provide:
