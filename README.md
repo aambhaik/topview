@@ -25,7 +25,8 @@ OR
 
     * change the registry Host and Port as necessary in the Dockerfile
     * docker build -t mashery/topview:1.0 .
-    * docker run -it mashery/topview:1.0 /bin/bash
+    * docker run -it -e TMGC_REGISTRY_HOST=10.1.10.138 mashery/topview:1.0 /bin/bash
+      - replace the env var TMGC_REGISTRY_HOST with your registry ip
 
 You are ready to use the topview!
 
