@@ -20,35 +20,35 @@ var nodeId string
 var validNodeTypeResources = map[string]string{"db": "/databases", "nosql": "/cassandras", "caches": "/caches", "tm": "/gateways", "log": "/logservices"}
 
 func init() {
-	RootCmd.AddCommand(getCmd)
-	getCmd.AddCommand(cmdGetClusters)
-	getCmd.AddCommand(cmdGetZones)
-	getCmd.AddCommand(cmdGetNodes)
-	getCmd.AddCommand(cmdGetSettings)
+	RootCmd.AddCommand(listCmd)
+	listCmd.AddCommand(cmdListClusters)
+	listCmd.AddCommand(cmdListZones)
+	listCmd.AddCommand(cmdListNodes)
+	listCmd.AddCommand(cmdListSettings)
 
-	cmdGetNodes.Flags().StringVar(&nodeType, "type", "", "type of the node")
-	//cobra.MarkFlagRequired(cmdGetNodes.Flags(), "type")
+	cmdListNodes.Flags().StringVar(&nodeType, "type", "", "type of the node")
+	//cobra.MarkFlagRequired(cmdListNodes.Flags(), "type")
 
-	cmdGetSettings.Flags().StringVar(&nodeType, "type", "", "type of the node")
-	cmdGetSettings.Flags().StringVar(&nodeId, "nodeId", "", "ID of the node")
-	cobra.MarkFlagRequired(cmdGetSettings.Flags(), "type")
-	cobra.MarkFlagRequired(cmdGetSettings.Flags(), "nodeId")
+	cmdListSettings.Flags().StringVar(&nodeType, "type", "", "type of the node")
+	cmdListSettings.Flags().StringVar(&nodeId, "nodeId", "", "ID of the node")
+	cobra.MarkFlagRequired(cmdListSettings.Flags(), "type")
+	cobra.MarkFlagRequired(cmdListSettings.Flags(), "nodeId")
 
 }
 
-var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Clusterwide view of the topology",
-	Long:  `Clusterwide view of the topology`,
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List of clusters in the topology",
+	Long:  `List of clusters in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Please specify one of the following subcommands: [clusters|zones|nodes|settings]")
 	},
 }
 
-var cmdGetClusters = &cobra.Command{
+var cmdListClusters = &cobra.Command{
 	Use:   "clusters",
-	Short: "Get available clusters",
-	Long:  `Get available clusters in the topology`,
+	Short: "List of clusters in the topology",
+	Long:  `List of clusters in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		dir, err := homedir.Dir()
@@ -95,10 +95,10 @@ var cmdGetClusters = &cobra.Command{
 	},
 }
 
-var cmdGetZones = &cobra.Command{
+var cmdListZones = &cobra.Command{
 	Use:   "zones",
-	Short: "Get available zones in a cluster",
-	Long:  `Get available zones in a cluster in the topology`,
+	Short: "List of zones in a cluster",
+	Long:  `List of zones in a cluster in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dir, err := homedir.Dir()
 		bytes, err := ioutil.ReadFile(dir + "/.topview-session.json")
@@ -156,10 +156,10 @@ var cmdGetZones = &cobra.Command{
 	},
 }
 
-var cmdGetNodes = &cobra.Command{
+var cmdListNodes = &cobra.Command{
 	Use:   "nodes",
-	Short: "Get available nodes in a zone",
-	Long:  `Get available nodes in a zone in the topology`,
+	Short: "List of nodes in a zone",
+	Long:  `List of nodes in a zone in a cluster in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flag.Parse()
 		dir, err := homedir.Dir()
@@ -205,10 +205,10 @@ var cmdGetNodes = &cobra.Command{
 	},
 }
 
-var cmdGetSettings = &cobra.Command{
+var cmdListSettings = &cobra.Command{
 	Use:   "settings",
-	Short: "Get settings for a specific node",
-	Long:  `Get settings for a specific node in the topology`,
+	Short: "List of settings for a specific node",
+	Long:  `List of settings for a specific node in the topology`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flag.Parse()
 		dir, err := homedir.Dir()
