@@ -97,6 +97,9 @@ func GetAllNodes(session *model.Session, validNodeTypeResources *map[string]stri
 
 	allNodes := make(map[string][]*model.Node)
 	for t, nodeResource := range *validNodeTypeResources {
+		if nodeType != nil && t != *nodeType {
+			continue
+		}
 		url = baseRegistryURL + "/clusters/" + clusterId + "/zones/" + zoneId + nodeResource
 		response, err := http.Get(url)
 		if err != nil {
@@ -114,9 +117,6 @@ func GetAllNodes(session *model.Session, validNodeTypeResources *map[string]stri
 				log.Fatal(err)
 			}
 			allNodes[t] = nodes
-		}
-		if nodeType != nil && t == *nodeType {
-			break
 		}
 	}
 
